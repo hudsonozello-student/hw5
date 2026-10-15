@@ -1,0 +1,200 @@
+{
+  "problem": "Problem 4: add the MCP server to vibe coder and test each tool",
+  "vibe_coder": "Claude Code (Claude desktop app, Code tab)",
+  "mcp_config": {
+    "loaded_from": "MGT 409 AI Foundations/.mcp.json (the project root Claude Code is opened in)",
+    "deliverable_copy": "Homework 5/.mcp.json",
+    "server_name": "campus-customs",
+    "transport": "stdio",
+    "server_file": "Homework 5/mcp_server/server.py"
+  },
+  "database": "data/campus_customs_new.db",
+  "tests": [
+    {
+      "test": 1,
+      "ticket": 101,
+      "prompt": "Problem 4 test 1: use the campus-customs check_stock tool to check CC-TEE-WHITE in size S, qty needed 1, for ticket 101.",
+      "tool": "mcp__campus-customs__check_stock",
+      "arguments": {
+        "sku": "CC-TEE-WHITE",
+        "size": "S",
+        "qty_needed": 1
+      },
+      "tool_output": {
+        "found": true,
+        "sku": "CC-TEE-WHITE",
+        "name": "Classic Bulldog Tee",
+        "size": "S",
+        "qty": 0,
+        "location": "Aisle B",
+        "other_sizes": [
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "M",
+            "qty": 5,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "L",
+            "qty": 3,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "XL",
+            "qty": 2,
+            "location": "Aisle B"
+          }
+        ],
+        "qty_needed": 1,
+        "shortfall": 1,
+        "can_fill_now": false
+      },
+      "db_check": {
+        "query": "SELECT sku, name, size, qty, location FROM inventory WHERE sku = ?",
+        "params": [
+          "CC-TEE-WHITE"
+        ],
+        "rows": [
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "L",
+            "qty": 3,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "M",
+            "qty": 5,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "S",
+            "qty": 0,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "XL",
+            "qty": 2,
+            "location": "Aisle B"
+          }
+        ]
+      },
+      "field_checks": {
+        "requested_size_row": true,
+        "other_sizes": true,
+        "shortfall": true,
+        "can_fill_now": true
+      },
+      "matches_db": true
+    },
+    {
+      "test": 2,
+      "ticket": 102,
+      "prompt": "Problem 4 test 2: use the campus-customs get_lease tool to look up lease 1 for ticket 102.",
+      "tool": "mcp__campus-customs__get_lease",
+      "arguments": {
+        "lease_id": 1
+      },
+      "tool_output": {
+        "found": true,
+        "id": 1,
+        "space_name": "Chapel Street shop",
+        "landlord": "Elm City Properties",
+        "monthly_rent": 2400,
+        "next_due": "2026-09-02",
+        "notes": null,
+        "shop_today": "2026-08-31",
+        "days_until_due": 2,
+        "is_overdue": false
+      },
+      "db_check": {
+        "query": "SELECT * FROM leases WHERE id = ?; SELECT date_today FROM desk",
+        "params": [
+          1
+        ],
+        "rows": {
+          "leases": [
+            {
+              "id": 1,
+              "space_name": "Chapel Street shop",
+              "landlord": "Elm City Properties",
+              "monthly_rent": 2400.0,
+              "next_due": "2026-09-02",
+              "notes": null
+            }
+          ],
+          "desk": [
+            {
+              "date_today": "2026-08-31"
+            }
+          ]
+        }
+      },
+      "field_checks": {
+        "lease_row": true,
+        "shop_today": true,
+        "days_until_due": true,
+        "is_overdue": true
+      },
+      "matches_db": true
+    },
+    {
+      "test": 3,
+      "ticket": 103,
+      "prompt": "Problem 4 test 3: use the campus-customs check_margin tool for 20 CC-HOOD-NAVY at 15% off for ticket 103.",
+      "tool": "mcp__campus-customs__check_margin",
+      "arguments": {
+        "sku": "CC-HOOD-NAVY",
+        "qty": 20,
+        "discount_pct": 15
+      },
+      "tool_output": {
+        "found": true,
+        "sku": "CC-HOOD-NAVY",
+        "qty": 20,
+        "unit_cost": 22,
+        "list_price": 58,
+        "discount_pct": 15,
+        "unit_price": 49.3,
+        "unit_margin": 27.3,
+        "margin_pct": 55.4,
+        "order_total": 986,
+        "order_cost": 440,
+        "order_margin": 546,
+        "break_even_discount_pct": 62.1,
+        "below_cost": false
+      },
+      "db_check": {
+        "query": "SELECT sku, unit_cost, list_price FROM pricing WHERE sku = ?",
+        "params": [
+          "CC-HOOD-NAVY"
+        ],
+        "rows": [
+          {
+            "sku": "CC-HOOD-NAVY",
+            "unit_cost": 22.0,
+            "list_price": 58.0
+          }
+        ]
+      },
+      "field_checks": {
+        "pricing_row": true,
+        "unit_price": true,
+        "unit_margin": true,
+        "order_totals": true
+      },
+      "matches_db": true
+    }
+  ]
+}
